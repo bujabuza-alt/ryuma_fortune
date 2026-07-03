@@ -2,7 +2,10 @@ import { createApp, ref, computed } from 'vue';
 import { useToast } from './composables/useToast.js';
 import { useFortune } from './composables/useFortune.js';
 import { usePsych } from './composables/usePsych.js';
+import { useWeather } from './composables/useWeather.js';
 import { menuItems } from './data/menuData.js';
+import { OFFICE_QUOTES } from './data/quotes.js';
+import { dayOfYearIndex } from './utils.js';
 
 createApp({
   setup() {
@@ -20,15 +23,19 @@ createApp({
       return `${d.getMonth() + 1}월 ${d.getDate()}일 (${days[d.getDay()]})`;
     });
 
+    const dailyQuote = computed(() => OFFICE_QUOTES[dayOfYearIndex(OFFICE_QUOTES.length)]);
+
     const { toastMsg, showToast } = useToast();
     const fortune = useFortune();
     const psych = usePsych();
+    const weather = useWeather();
 
     return {
-      tabs, activeTab, todayLabel,
+      tabs, activeTab, todayLabel, dailyQuote,
       toastMsg, showToast,
       ...fortune,
       ...psych,
+      ...weather,
       menuItems,
     };
   },
