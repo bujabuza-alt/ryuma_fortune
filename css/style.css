@@ -1,23 +1,26 @@
 :root{
-  --bg-deep:#0b0a1a;
-  --bg-card:#15132b;
-  --bg-card-2:#1d1a3a;
-  --accent:#a78bfa;
-  --accent-2:#f472b6;
-  --accent-3:#fbbf24;
-  --text-main:#f3f1ff;
-  --text-sub:#9b96c4;
-  --border:rgba(167,139,250,0.18);
+  --bg-deep:#faf6f0;
+  --bg-card:#ffffff;
+  --bg-card-2:#fdf0f8;
+  --accent:#6a5cd6;
+  --accent-2:#c93f85;
+  --accent-3:#a3690a;
+  --accent-rgb:106,92,214;
+  --accent-2-rgb:201,63,133;
+  --accent-3-rgb:163,105,10;
+  --text-main:#2d2a3d;
+  --text-sub:#7a7594;
+  --border:rgba(106,92,214,0.16);
   --radius:18px;
-  --shadow:0 10px 30px rgba(0,0,0,0.35);
+  --shadow:0 8px 24px rgba(76,68,120,0.10), 0 2px 6px rgba(76,68,120,0.06);
 }
 *{box-sizing:border-box;}
 html,body{margin:0;padding:0;}
 body{
   font-family:"Pretendard","Apple SD Gothic Neo","Noto Sans KR",-apple-system,BlinkMacSystemFont,sans-serif;
   background:
-    radial-gradient(circle at 15% 0%, rgba(167,139,250,0.25), transparent 45%),
-    radial-gradient(circle at 90% 10%, rgba(244,114,182,0.18), transparent 40%),
+    radial-gradient(circle at 15% 0%, rgba(var(--accent-rgb),0.12), transparent 45%),
+    radial-gradient(circle at 90% 10%, rgba(var(--accent-2-rgb),0.10), transparent 40%),
     var(--bg-deep);
   color:var(--text-main);
   min-height:100vh;
@@ -53,13 +56,41 @@ body{
   color:var(--text-sub);
   font-weight:500;
 }
+.header-meta{
+  display:flex;
+  flex-direction:column;
+  align-items:flex-end;
+  gap:6px;
+}
 .header-date{
   font-size:12px;
   color:var(--text-sub);
-  background:rgba(255,255,255,0.04);
+  background:rgba(var(--accent-rgb),0.05);
   border:1px solid var(--border);
   padding:6px 10px;
   border-radius:20px;
+}
+.header-weather{
+  font-size:12px;
+  color:var(--text-sub);
+  background:rgba(var(--accent-rgb),0.05);
+  border:1px solid var(--border);
+  padding:6px 10px;
+  border-radius:20px;
+  white-space:nowrap;
+}
+
+/* Daily quote strip */
+.daily-quote{
+  margin:0 20px 4px;
+  padding:9px 14px;
+  font-size:12px;
+  color:var(--text-sub);
+  background:rgba(var(--accent-rgb),0.06);
+  border:1px solid var(--border);
+  border-radius:12px;
+  text-align:center;
+  line-height:1.4;
 }
 
 /* Main content area */
@@ -107,7 +138,7 @@ body{
   margin:0 auto 16px;
   border-radius:50%;
   background:radial-gradient(circle at 35% 30%, #fff7e0, var(--accent-3) 40%, var(--accent-2) 75%, var(--accent) 100%);
-  box-shadow:0 0 50px rgba(251,191,36,0.45);
+  box-shadow:0 0 50px rgba(var(--accent-3-rgb),0.25);
   display:flex;align-items:center;justify-content:center;
   font-size:34px;
   animation:floaty 3.2s ease-in-out infinite;
@@ -143,7 +174,7 @@ body{
   padding:14px 16px;
   border-radius:14px;
   border:1px solid var(--border);
-  background:rgba(255,255,255,0.04);
+  background:rgba(var(--accent-rgb),0.05);
   color:var(--text-main);
   font-size:15px;
   outline:none;
@@ -151,11 +182,7 @@ body{
 }
 .date-input:focus{
   border-color:var(--accent);
-  box-shadow:0 0 0 3px rgba(167,139,250,0.18);
-}
-select.date-input{
-  -webkit-appearance:none;
-  appearance:none;
+  box-shadow:0 0 0 3px rgba(var(--accent-rgb),0.18);
 }
 .btn-primary{
   width:100%;
@@ -167,7 +194,7 @@ select.date-input{
   font-size:15.5px;
   font-weight:700;
   cursor:pointer;
-  box-shadow:0 8px 22px rgba(167,139,250,0.35);
+  box-shadow:0 8px 22px rgba(var(--accent-rgb),0.30);
   transition:transform 0.15s, box-shadow 0.15s, opacity 0.2s;
 }
 .btn-primary:active{transform:scale(0.97);}
@@ -181,7 +208,7 @@ select.date-input{
   padding:13px 18px;
   border:1px solid var(--border);
   border-radius:14px;
-  background:rgba(255,255,255,0.04);
+  background:rgba(var(--accent-rgb),0.05);
   color:var(--text-main);
   font-size:14px;
   font-weight:600;
@@ -189,7 +216,7 @@ select.date-input{
   margin-top:10px;
   transition:background 0.2s;
 }
-.btn-secondary:active{background:rgba(255,255,255,0.09);}
+.btn-secondary:active{background:rgba(var(--accent-rgb),0.09);}
 
 .loading-box{
   text-align:center;
@@ -199,7 +226,7 @@ select.date-input{
   width:46px;height:46px;
   margin:0 auto 18px;
   border-radius:50%;
-  border:3px solid rgba(167,139,250,0.2);
+  border:3px solid rgba(var(--accent-rgb),0.2);
   border-top-color:var(--accent);
   animation:spin 0.9s linear infinite;
 }
@@ -213,7 +240,7 @@ select.date-input{
 }
 .result-header .tag{
   display:inline-block;
-  background:rgba(167,139,250,0.16);
+  background:rgba(var(--accent-rgb),0.16);
   color:var(--accent);
   font-size:12px;
   font-weight:700;
@@ -243,7 +270,7 @@ select.date-input{
 .card-body{
   font-size:13.5px;
   line-height:1.7;
-  color:#dcd9f5;
+  color:var(--text-main);
 }
 
 .score-row{
@@ -255,7 +282,7 @@ select.date-input{
 .score-pill{
   flex:1 1 auto;
   min-width:70px;
-  background:rgba(255,255,255,0.04);
+  background:rgba(var(--accent-rgb),0.05);
   border:1px solid var(--border);
   border-radius:12px;
   padding:10px 8px;
@@ -278,7 +305,7 @@ select.date-input{
   gap:12px;
 }
 .lucky-item{
-  background:rgba(255,255,255,0.04);
+  background:rgba(var(--accent-rgb),0.05);
   border:1px solid var(--border);
   border-radius:14px;
   padding:14px;
@@ -291,7 +318,7 @@ select.date-input{
   width:22px;height:22px;
   border-radius:50%;
   margin:0 auto 6px;
-  border:2px solid rgba(255,255,255,0.3);
+  border:2px solid rgba(45,42,61,0.15);
 }
 
 /* Cookie */
@@ -317,8 +344,8 @@ select.date-input{
 .cookie-msg{
   margin-top:16px;
   padding:16px;
-  background:rgba(251,191,36,0.08);
-  border:1px dashed rgba(251,191,36,0.4);
+  background:rgba(var(--accent-3-rgb),0.08);
+  border:1px dashed rgba(var(--accent-3-rgb),0.4);
   border-radius:14px;
   font-size:14px;
   font-weight:600;
@@ -352,7 +379,7 @@ select.date-input{
   padding:14px 16px;
   border-radius:14px;
   border:1px solid var(--border);
-  background:rgba(255,255,255,0.03);
+  background:rgba(var(--accent-rgb),0.04);
   color:var(--text-main);
   font-size:13.5px;
   margin-bottom:10px;
@@ -367,7 +394,7 @@ select.date-input{
   flex:0 0 auto;
   width:26px;height:26px;
   border-radius:50%;
-  background:rgba(167,139,250,0.18);
+  background:rgba(var(--accent-rgb),0.18);
   color:var(--accent);
   font-size:12px;
   font-weight:800;
@@ -375,7 +402,7 @@ select.date-input{
 }
 .choice-btn.selected{
   border-color:var(--accent);
-  background:rgba(167,139,250,0.14);
+  background:rgba(var(--accent-rgb),0.14);
 }
 .choice-btn.selected .choice-letter{
   background:var(--accent);
@@ -384,15 +411,15 @@ select.date-input{
 .choice-btn:disabled{cursor:default;}
 
 .analysis-card{
-  border:1px solid rgba(244,114,182,0.35);
-  background:linear-gradient(160deg, rgba(244,114,182,0.08), var(--bg-card-2));
+  border:1px solid rgba(var(--accent-2-rgb),0.35);
+  background:linear-gradient(160deg, rgba(var(--accent-2-rgb),0.08), var(--bg-card-2));
 }
 .analysis-tag{
   display:inline-block;
   font-size:11px;
   font-weight:700;
   color:var(--accent-2);
-  background:rgba(244,114,182,0.14);
+  background:rgba(var(--accent-2-rgb),0.14);
   padding:4px 10px;
   border-radius:20px;
   margin-bottom:10px;
@@ -407,9 +434,9 @@ select.date-input{
   font-size:12px;
   padding:6px 12px;
   border-radius:20px;
-  background:rgba(167,139,250,0.14);
+  background:rgba(var(--accent-rgb),0.14);
   border:1px solid var(--border);
-  color:#e4e1ff;
+  color:var(--accent);
 }
 
 /* Ryuma info */
@@ -421,16 +448,16 @@ select.date-input{
   height:150px;
   position:relative;
   background:
-    repeating-linear-gradient(0deg, rgba(167,139,250,0.08) 0 1px, transparent 1px 28px),
-    repeating-linear-gradient(90deg, rgba(167,139,250,0.08) 0 1px, transparent 1px 28px),
-    linear-gradient(160deg, #201c40, #15132b);
+    repeating-linear-gradient(0deg, rgba(var(--accent-rgb),0.08) 0 1px, transparent 1px 28px),
+    repeating-linear-gradient(90deg, rgba(var(--accent-rgb),0.08) 0 1px, transparent 1px 28px),
+    linear-gradient(160deg, var(--bg-card-2), #f2ecf9);
   display:flex;
   align-items:center;
   justify-content:center;
 }
 .map-pin{
   font-size:34px;
-  filter:drop-shadow(0 6px 10px rgba(244,114,182,0.5));
+  filter:drop-shadow(0 6px 10px rgba(var(--accent-2-rgb),0.35));
   animation:floaty 2.6s ease-in-out infinite;
 }
 .map-info{
@@ -456,7 +483,7 @@ select.date-input{
   padding:11px 10px;
   border-radius:12px;
   border:1px solid var(--border);
-  background:rgba(255,255,255,0.04);
+  background:rgba(var(--accent-rgb),0.05);
   color:var(--text-main);
   font-size:12.5px;
   font-weight:700;
@@ -477,7 +504,7 @@ select.date-input{
   gap:10px;
 }
 .menu-chip{
-  background:rgba(255,255,255,0.04);
+  background:rgba(var(--accent-rgb),0.05);
   border:1px solid var(--border);
   border-radius:16px;
   padding:10px 14px;
@@ -520,7 +547,7 @@ select.date-input{
 .hours-list{
   font-size:13px;
   line-height:1.9;
-  color:#dcd9f5;
+  color:var(--text-main);
 }
 .hours-list .day{color:var(--text-sub);}
 
@@ -531,7 +558,7 @@ select.date-input{
   transform:translateX(-50%);
   width:100%;
   max-width:480px;
-  background:rgba(21,19,43,0.92);
+  background:rgba(250,246,240,0.92);
   backdrop-filter:blur(14px);
   border-top:1px solid var(--border);
   display:flex;
@@ -557,7 +584,7 @@ select.date-input{
 .nav-item .nav-ico{font-size:19px;}
 .nav-item.active{
   color:var(--accent);
-  background:rgba(167,139,250,0.1);
+  background:rgba(var(--accent-rgb),0.1);
 }
 
 /* Toast */
@@ -565,9 +592,9 @@ select.date-input{
   position:fixed;
   bottom:96px; left:50%;
   transform:translateX(-50%);
-  background:rgba(30,27,58,0.96);
+  background:rgba(45,42,61,0.94);
   border:1px solid var(--border);
-  color:var(--text-main);
+  color:#fff;
   padding:11px 18px;
   border-radius:30px;
   font-size:13px;
@@ -585,7 +612,7 @@ select.date-input{
 .footer-log{
   text-align:center;
   font-size:10.5px;
-  color:rgba(155,150,196,0.55);
+  color:rgba(122,117,148,0.6);
   padding:18px 20px 4px;
   line-height:1.6;
 }

@@ -21,8 +21,16 @@
         <div class="brand-sub">Ryuma Fortune · AI 운세 서비스</div>
       </div>
     </div>
-    <div class="header-date">{{ todayLabel }}</div>
+    <div class="header-meta">
+      <div class="header-date">{{ todayLabel }}</div>
+      <div class="header-weather" v-if="!weatherLoading && !weatherError">
+        {{ weatherEmoji }} {{ weatherTemp }}°C
+      </div>
+    </div>
   </div>
+
+  <!-- 오늘의 한마디 -->
+  <div class="daily-quote">💡 {{ dailyQuote }}</div>
 
   <!-- ===================== Fortune Tab ===================== -->
   <div class="view-wrap" v-if="activeTab === 'fortune'">
