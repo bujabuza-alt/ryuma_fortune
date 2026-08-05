@@ -4,6 +4,9 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 <title>류마 운세 - Ryuma Fortune</title>
+<meta name="description" content="오늘의 운세, 타로, 심리테스트를 가볍게 즐기는 하루 한 번 운세 앱." />
+<meta name="theme-color" content="#faf6f0" />
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔮</text></svg>" />
 <link rel="stylesheet" href="css/style.css" />
 <!-- Vue 3 (CDN, ESM build) -->
 <script type="importmap">
@@ -18,7 +21,7 @@
       <span class="brand-emoji">🔮</span>
       <div>
         <div>류마 운세</div>
-        <div class="brand-sub">Ryuma Fortune · AI 운세 서비스</div>
+        <div class="brand-sub">오늘의 운세 · 심리테스트</div>
       </div>
     </div>
     <div class="header-meta">
@@ -32,203 +35,134 @@
   <!-- 오늘의 한마디 -->
   <div class="daily-quote">💡 {{ dailyQuote }}</div>
 
-  <!-- ===================== Fortune Tab ===================== -->
-  <div class="view-wrap" v-if="activeTab === 'fortune'">
+  <!-- ===================== 콘텐츠 실행 화면 ===================== -->
+  <div class="view-wrap" v-if="activeContent">
+    <button class="back-btn" @click="closeContent">‹ 목록으로</button>
+    <component
+      :is="runnerFor(activeContent)"
+      :key="activeContent.id"
+      :content="activeContent"
+      :date-label="todayLabel"
+    />
+  </div>
 
-    <!-- Input state -->
-    <div v-if="!fortuneResult && !fortuneLoading" class="card fortune-hero">
-      <div class="glow-orb">✨</div>
-      <h2>오늘의 운세를 확인해보세요</h2>
-      <p>생년월일을 입력하면 AI가 당신만을 위한<br/>전체운과 별자리 운세를 분석해드려요.</p>
+  <template v-else>
+    <!-- ===================== 오늘 (홈) ===================== -->
+    <div class="view-wrap" v-if="activeTab === 'home'">
+      <div class="section-title">✨ 오늘의 픽</div>
+      <div class="section-desc">날마다 다른 콘텐츠가 올라와요.</div>
 
-      <div class="input-group">
-        <label>생년월일 (YYYY-MM-DD)</label>
-        <input
-          type="date"
-          class="date-input"
-          v-model="birthday"
-          :max="maxDate"
-        />
+      <div class="feature-card" @click="openContent(featured)">
+        <div class="feature-glow"></div>
+        <span class="feature-badge">{{ formatLabel(featured.format) }}</span>
+        <div class="feature-emoji">{{ featured.emoji }}</div>
+        <h2>{{ featured.title }}</h2>
+        <p>{{ featured.tagline }}</p>
+        <span class="feature-cta">지금 해보기 ›</span>
       </div>
 
-      <button class="btn-primary" :disabled="!birthday" @click="getFortune">
-        ✨ 운세 보기
+      <div class="section-title sm">⚡ 입력 없이 바로</div>
+      <div class="tile-grid">
+        <button class="tile" v-for="c in draws" :key="c.id" @click="openContent(c)">
+          <span class="tile-emoji">{{ c.emoji }}</span>
+          <span class="tile-title">{{ c.title }}</span>
+        </button>
+      </div>
+
+      <div class="section-title sm">🧠 가볍게 해보기</div>
+      <button class="row-item" v-for="c in quizzes.slice(0, 3)" :key="c.id" @click="openContent(c)">
+        <span class="row-emoji">{{ c.emoji }}</span>
+        <span class="row-txt">
+          <b>{{ c.title }}</b>
+          <span>{{ c.tagline }}</span>
+        </span>
+        <span class="row-arrow">›</span>
       </button>
     </div>
 
-    <!-- Loading state -->
-    <div v-if="fortuneLoading" class="card loading-box">
-      <div class="spinner"></div>
-      <p>AI가 별자리와 사주를 분석하고 있어요...</p>
-    </div>
+    <!-- ===================== 운세 (포맷 C) ===================== -->
+    <div class="view-wrap" v-if="activeTab === 'fortune'">
+      <div class="section-title">🔮 운세</div>
+      <div class="section-desc">생년월일이나 이름으로 오늘의 흐름을 확인해보세요.</div>
 
-    <!-- Result state -->
-    <div v-if="fortuneResult && !fortuneLoading">
-      <div class="result-header">
-        <span class="tag">{{ fortuneResult.zodiac }} · {{ fortuneResult.birthLabel }}</span>
-        <h2>{{ fortuneResult.headline }}</h2>
-        <p>AI가 분석한 오늘의 맞춤 운세예요</p>
-      </div>
-
-      <!-- 전체운 -->
-      <div class="card">
-        <div class="card-title">🌙 전체운</div>
-        <div class="card-body">{{ fortuneResult.generalFortune }}</div>
-        <div class="score-row">
-          <div class="score-pill" v-for="s in fortuneResult.scores" :key="s.label">
-            <div class="label">{{ s.label }}</div>
-            <div class="stars">{{ '★'.repeat(s.value) }}{{ '☆'.repeat(5 - s.value) }}</div>
-          </div>
-        </div>
-      </div>
-
-      <!-- 별자리 운세 -->
-      <div class="card">
-        <div class="card-title">⭐ 별자리 운세 · {{ fortuneResult.zodiac }}</div>
-        <div class="card-body">{{ fortuneResult.horoscope }}</div>
-      </div>
-
-      <!-- 행운의 아이템 & 컬러 -->
-      <div class="card">
-        <div class="card-title">🍀 행운의 아이템 &amp; 컬러</div>
-        <div class="lucky-grid">
-          <div class="lucky-item">
-            <div class="ico">{{ fortuneResult.luckyItem.icon }}</div>
-            <div class="lab">행운의 아이템</div>
-            <div class="val">{{ fortuneResult.luckyItem.name }}</div>
-          </div>
-          <div class="lucky-item">
-            <div class="color-swatch" :style="{background: fortuneResult.luckyColor.hex}"></div>
-            <div class="lab">행운의 컬러</div>
-            <div class="val">{{ fortuneResult.luckyColor.name }}</div>
-          </div>
-          <div class="lucky-item">
-            <div class="ico">🔢</div>
-            <div class="lab">행운의 숫자</div>
-            <div class="val">{{ fortuneResult.luckyNumber }}</div>
-          </div>
-          <div class="lucky-item">
-            <div class="ico">🧭</div>
-            <div class="lab">행운의 방향</div>
-            <div class="val">{{ fortuneResult.luckyDirection }}</div>
-          </div>
-        </div>
-      </div>
-
-      <!-- 포춘쿠키 -->
-      <div
-        class="card cookie-card"
-        :class="{cracked: cookieCracked}"
-        @click="crackCookie"
-      >
-        <div class="card-title" style="justify-content:center;">🍪 포춘쿠키</div>
-        <div class="cookie-emoji">{{ cookieCracked ? '🥠' : '🍪' }}</div>
-        <div class="cookie-hint" v-if="!cookieCracked">탭하여 쿠키를 깨보세요</div>
-        <div class="cookie-msg" v-if="cookieCracked">
-          "{{ cookieMessage }}"
-        </div>
-      </div>
-
-      <button class="btn-secondary" @click="resetFortune">🔄 다시 입력하기</button>
-    </div>
-  </div>
-
-  <!-- ===================== Psych Test Tab ===================== -->
-  <div class="view-wrap" v-if="activeTab === 'psych'">
-    <div class="section-title">🧠 심리테스트</div>
-    <div class="section-desc">매일 새로운 질문으로 나의 숨겨진 심리를 알아보세요.</div>
-
-    <div class="card question-card">
-      <div class="question-meta">오늘의 질문 · {{ todayLabel }}</div>
-      <div class="question-text">{{ psychQuestion.text }}</div>
-
-      <button
-        v-for="(opt, idx) in psychQuestion.options"
-        :key="idx"
-        class="choice-btn"
-        :class="{selected: selectedChoice === idx}"
-        :disabled="selectedChoice !== null"
-        @click="selectChoice(idx)"
-      >
-        <span class="choice-letter">{{ ['A','B','C'][idx] }}</span>
-        <span>{{ opt }}</span>
+      <button class="row-item" v-for="c in profiles" :key="c.id" @click="openContent(c)">
+        <span class="row-emoji">{{ c.emoji }}</span>
+        <span class="row-txt">
+          <b>{{ c.title }}</b>
+          <span>{{ c.tagline }}</span>
+        </span>
+        <span class="row-arrow">›</span>
       </button>
     </div>
 
-    <div v-if="psychLoading" class="card loading-box">
-      <div class="spinner"></div>
-      <p>AI가 심리를 분석하고 있어요...</p>
+    <!-- ===================== 테스트 (포맷 B) ===================== -->
+    <div class="view-wrap" v-if="activeTab === 'test'">
+      <div class="section-title">🧠 심리테스트</div>
+      <div class="section-desc">질문 두세 개면 결과가 나와요.</div>
+
+      <button class="row-item" v-for="c in quizzes" :key="c.id" @click="openContent(c)">
+        <span class="row-emoji">{{ c.emoji }}</span>
+        <span class="row-txt">
+          <b>{{ c.title }}</b>
+          <span>{{ c.tagline }}</span>
+        </span>
+        <span class="row-arrow">›</span>
+      </button>
     </div>
 
-    <div v-if="psychAnalysis && !psychLoading" class="card analysis-card">
-      <span class="analysis-tag">AI 분석 결과</span>
-      <div class="card-title">{{ psychAnalysis.title }}</div>
-      <div class="card-body">{{ psychAnalysis.description }}</div>
-      <div class="trait-chips">
-        <span class="trait-chip" v-for="t in psychAnalysis.traits" :key="t">#{{ t }}</span>
-      </div>
-    </div>
+    <!-- ===================== 류마 안내 ===================== -->
+    <div class="view-wrap" v-if="activeTab === 'info'">
+      <div class="section-title">📍 류마 안내</div>
+      <div class="section-desc">매장 위치와 영업 정보를 확인하실 수 있어요.</div>
 
-    <button v-if="psychAnalysis && !psychLoading" class="btn-secondary" @click="resetPsych">
-      🔄 다른 질문 받기
-    </button>
-  </div>
-
-  <!-- ===================== Ryuma Info Tab ===================== -->
-  <div class="view-wrap" v-if="activeTab === 'info'">
-    <div class="section-title">📍 류마 안내</div>
-    <div class="section-desc">류마 매장 위치와 대표 메뉴를 확인해보세요.</div>
-
-    <div class="reserve-banner">
-      <div class="txt">
-        <b>📍 네이버 예약하기</b>
-        <span>지금 바로 자리를 예약해보세요</span>
-      </div>
-      <button class="go-btn" @click="showToast('네이버 예약 페이지로 이동합니다 (시뮬레이션)')">바로가기</button>
-    </div>
-
-    <div class="card map-card">
-      <div class="map-visual">
-        <div class="map-pin">📍</div>
-      </div>
-      <div class="map-info">
-        <div class="shop-name">류마 · 동탄 코벤트가든점</div>
-        <div class="shop-addr">동탄 코벤트가든 · 동탄 파라곤<br/>경기 화성시 동탄대로 일원</div>
-        <div class="map-btn-row">
-          <a class="map-btn naver-green" href="#" @click.prevent="showToast('네이버 지도 앱으로 이동합니다 (시뮬레이션)')">🗺️ 네이버 지도</a>
-          <a class="map-btn" href="#" @click.prevent="showToast('전화 연결을 시뮬레이션합니다')">📞 전화하기</a>
+      <div class="card map-card">
+        <div class="map-embed">
+          <!-- 지도가 로드되지 않는 환경에서도 위치가 보이도록 뒤에 폴백을 둔다 -->
+          <div class="map-fallback"><span>📍</span>{{ shop.name }}</div>
+          <iframe
+            :src="mapEmbedSrc"
+            title="류마 매장 위치 지도"
+            loading="lazy"
+            referrerpolicy="no-referrer-when-downgrade"
+            allowfullscreen
+          ></iframe>
+        </div>
+        <div class="map-info">
+          <div class="shop-name">{{ shop.name }}</div>
+          <div class="shop-addr">{{ shop.addr }}</div>
+          <div class="map-btn-row">
+            <a class="map-btn" :href="shop.naverMap" target="_blank" rel="noopener noreferrer">🗺️ 지도에서 보기</a>
+            <a class="map-btn" :href="shop.naverSearch" target="_blank" rel="noopener noreferrer">📅 예약 · 정보</a>
+          </div>
         </div>
       </div>
-    </div>
 
-    <div class="card">
-      <div class="card-title">🍽️ 대표 메뉴</div>
-      <div class="menu-chip-grid">
-        <div class="menu-chip" v-for="m in menuItems" :key="m.name">
-          <span>{{ m.icon }}</span>
-          <span>{{ m.name }}</span>
-          <span class="price">{{ m.price }}</span>
+      <div class="card">
+        <div class="card-title">🍽️ 대표 메뉴</div>
+        <div class="menu-chip-grid">
+          <div class="menu-chip" v-for="m in menuItems" :key="m.name">
+            <span>{{ m.icon }}</span>
+            <span>{{ m.name }}</span>
+            <span class="price">{{ m.price }}</span>
+          </div>
         </div>
       </div>
-    </div>
 
-    <div class="card">
-      <div class="card-title">🕒 영업시간</div>
-      <div class="hours-list">
-        <div><span class="day">평일</span> 11:30 - 21:30</div>
-        <div><span class="day">주말</span> 11:00 - 22:00</div>
-        <div><span class="day">매주 월요일</span> 정기휴무</div>
+      <div class="card">
+        <div class="card-title">🕒 영업시간</div>
+        <div class="hours-list">
+          <div><span class="day">평일</span> 11:30 - 21:30</div>
+          <div><span class="day">주말</span> 11:00 - 22:00</div>
+          <div><span class="day">매주 월요일</span> 정기휴무</div>
+        </div>
       </div>
+
+      <div class="footer-log">Ryuma Fortune v1.1.0</div>
     </div>
-  </div>
+  </template>
 
   <!-- Toast -->
   <div class="toast" v-if="toastMsg">{{ toastMsg }}</div>
-
-  <!-- Update log footer (visible only on info tab bottom) -->
-  <div class="footer-log" v-if="activeTab === 'info'">
-    Ryuma Fortune v1.0.0 · 업데이트 노트: AI 운세 분석 엔진 및 심리테스트 기능 추가
-  </div>
 
   <!-- Bottom Navigation -->
   <div class="bottom-nav">
@@ -236,8 +170,8 @@
       v-for="tab in tabs"
       :key="tab.key"
       class="nav-item"
-      :class="{active: activeTab === tab.key}"
-      @click="activeTab = tab.key"
+      :class="{active: activeTab === tab.key && !activeContent}"
+      @click="goTab(tab.key)"
     >
       <span class="nav-ico">{{ tab.icon }}</span>
       <span>{{ tab.label }}</span>
