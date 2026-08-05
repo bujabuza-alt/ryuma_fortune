@@ -27,3 +27,19 @@ export function getZodiac(month, day) {
   }
   return '염소자리';
 }
+
+/** 띠 — 생년월일 없이 바로 고를 수 있어 진입장벽이 낮음 */
+export const CHINESE_ZODIAC = [
+  { value: '쥐', label: '쥐띠', emoji: '🐭' },
+  { value: '소', label: '소띠', emoji: '🐮' },
+  { value: '호랑이', label: '호랑이띠', emoji: '🐯' },
+  { value: '토끼', label: '토끼띠', emoji: '🐰' },
+  { value: '용', label: '용띠', emoji: '🐲' },
+  { value: '뱀', label: '뱀띠', emoji: '🐍' },
+  { value: '말', label: '말띠', emoji: '🐴' },
+  { value: '양', label: '양띠', emoji: '🐑' },
+  { value: '원숭이', label: '원숭이띠', emoji: '🐵' },
+  { value: '닭', label: '닭띠', emoji: '🐔' },
+  { value: '개', label: '개띠', emoji: '🐶' },
+  { value: '돼지', label: '돼지띠', emoji: '🐷' },
+];
